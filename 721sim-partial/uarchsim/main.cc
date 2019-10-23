@@ -129,10 +129,10 @@ static void set_lane_matrix(const char* config)
 }
 
 static void set_perfect_flags(const char* config) {
-   uint64_t pbp, pdc, pic, ptc;
-   if (sscanf(config, "%lu,%lu,%lu,%lu", &pbp, &pdc, &pic, &ptc) != 4) {
-      fprintf(stderr, "Incorrect usage of --perf=<pbp>,<pdc>,<pic>,<ptc>\n");
-      fprintf(stderr, "...where pbp (perfect branch prediction), pdc (perfect D$), pic (perfect I$), and ptc (perfect T$) are each 0 or 1.\n");
+   uint64_t pvp,pbp, pdc, pic, ptc;
+   if (sscanf(config, "%lu,%lu,%lu,%lu,%lu",&pvp,&pbp, &pdc, &pic, &ptc) != 5) {
+      fprintf(stderr, "Incorrect usage of --vflags=<pvp>,<pbp>,<pdc>,<pic>,<ptc>\n");
+      fprintf(stderr, "...where pvp (perfect value prediction), pbp (perfect branch prediction), pdc (perfect D$), pic (perfect I$), and ptc (perfect T$) are each 0 or 1.\n");
       exit(-1);
    }
    else {
@@ -140,7 +140,25 @@ static void set_perfect_flags(const char* config) {
       PERFECT_DCACHE = (pdc ? true : false);
       PERFECT_ICACHE = (pic ? true : false);
       PERFECT_FETCH = (ptc ? true : false);
+      PERFECT_VALUE_PREDICTION = (pvp ? true : false);
    }
+}
+
+static void set_value_prediction_flags(const char* config){
+   uint64_t poc, prc, pad, pol;
+   if (sscanf(config, "%lu,%lu,%lu,%lu", &poc, &prc, &pad, &pol) != 4) {
+      fprintf(stderr, "Incorrect usage of --vflags=<poc>,<prc>,<pad>,<pol>\n");
+      fprintf(stderr, "...where poc (predict with oracle conf), prc (predict with real conf), pad (predict all dest.), and pol (predic only loads) are each 0 or 1.\n");
+      exit(-1);
+   }
+   else {
+      PREDICT_ALL_DEST = (pad ? true : false);
+      PREDICT_LOADS_ONLY = (pol ? true : false);
+      ORACLE_CONF = (poc ? true : false);
+      REAL_CONF = (prc ? true : false);
+   }
+
+
 }
 
 static void set_disambig_flags(const char* config) {
@@ -215,6 +233,7 @@ int main(int argc, char** argv)
     }
   });
   parser.option(0, "perf", 1, [&](const char* s){set_perfect_flags(s);});
+  parser.option(0, "vflags", 1, [&](const char* s){set_value_prediction_flags(s);});//////////////////////////////////
   parser.option(0, "cp"  , 1, [&](const char* s){NUM_CHECKPOINTS = atoi(s);});
   parser.option(0, "btb" , 1, [&](const char* s){BTB_SIZE = atoi(s); BTB_MASK = BTB_SIZE-1;});
   parser.option(0, "ctiq", 1, [&](const char* s){CTIQ_SIZE = atoi(s); CTIQ_MASK = CTIQ_SIZE-1;});
@@ -222,6 +241,9 @@ int main(int argc, char** argv)
   parser.option(0, "ras" , 1, [&](const char* s){RAS_SIZE = atoi(s);});
   parser.option(0, "fq"  , 1, [&](const char* s){FETCH_QUEUE_SIZE = atoi(s);});
   parser.option(0, "al"  , 1, [&](const char* s){ACTIVE_LIST_SIZE = atoi(s);});
+  parser.option(0, "vp"  , 1, [&](const char* s){VALUE_PREDICTION = atoi(s);});//////////////////////////////////////////////
+  parser.option(0, "psize"  , 1, [&](const char* s){PREDICTOR_SIZE = atoi(s);});//////////////////////////////////////////////
+  parser.option(0, "order"  , 1, [&](const char* s){ORDER = atoi(s);});
   parser.option(0, "iq"  , 1, [&](const char* s){ISSUE_QUEUE_SIZE = atoi(s);});
   parser.option(0, "iqnp", 1, [&](const char* s){ISSUE_QUEUE_NUM_PARTS = atoi(s);});
   parser.option('a', 0, 0, [&](const char* s){PRESTEER = true;});

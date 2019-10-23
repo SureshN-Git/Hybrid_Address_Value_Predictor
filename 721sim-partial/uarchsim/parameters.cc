@@ -13,10 +13,20 @@ bool ORACLE_DISAMBIG		  = false;
 bool PERFECT_ICACHE		    = false;
 bool PERFECT_DCACHE		    = false;
 
+// Value Prediction flags
+bool PREDICT_ALL_DEST         = false;
+bool PREDICT_LOADS_ONLY       = false;
+bool ORACLE_CONF              = false;
+bool REAL_CONF                = false;
+bool PERFECT_VALUE_PREDICTION = false;
+unsigned int ORDER = 4;
+
 // Core.
 uint32_t FETCH_QUEUE_SIZE	= 32;
 uint32_t NUM_CHECKPOINTS	= 32;
 uint32_t ACTIVE_LIST_SIZE	= 256;
+uint32_t VALUE_PREDICTION = 0;////////////////////////////////////////////////
+uint32_t PREDICTOR_SIZE = 1024;////////////////////////////////////////////////
 uint32_t ISSUE_QUEUE_SIZE	= 32;
 uint32_t ISSUE_QUEUE_NUM_PARTS	= 4;
 uint32_t LQ_SIZE		      = 32;

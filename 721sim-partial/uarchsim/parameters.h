@@ -13,10 +13,21 @@ extern bool ORACLE_DISAMBIG;
 extern bool PERFECT_ICACHE;
 extern bool PERFECT_DCACHE;
 
+// Value prediction Flags
+
+extern bool PREDICT_ALL_DEST;
+extern bool PREDICT_LOADS_ONLY;
+extern bool ORACLE_CONF;
+extern bool REAL_CONF;
+extern bool PERFECT_VALUE_PREDICTION;
+extern unsigned int ORDER;
+
 // Core.
 extern unsigned int FETCH_QUEUE_SIZE;
 extern unsigned int NUM_CHECKPOINTS;
 extern unsigned int ACTIVE_LIST_SIZE;
+extern unsigned int VALUE_PREDICTION;////////////////////////////////////////////////
+extern unsigned int PREDICTOR_SIZE;////////////////////////////////////////////////
 extern unsigned int ISSUE_QUEUE_SIZE;
 extern unsigned int ISSUE_QUEUE_NUM_PARTS;
 extern unsigned int LQ_SIZE;

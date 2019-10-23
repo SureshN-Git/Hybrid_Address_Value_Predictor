@@ -79,7 +79,7 @@ pipeline_t::pipeline_t(
 	FQ(fq_size, this),
 	IQ(iq_size, iq_num_parts, this),
 	LSU(lq_size, sq_size, Tid, _mmu, this),
-	MPT(1024)
+	MPT(PREDICTOR_SIZE)
 {
   unsigned int i, j, ex_depth;
 
@@ -345,6 +345,13 @@ pipeline_t::~pipeline_t()
 #endif
 
   BP.dump_stats(stats_log);
+
+////////////////////////////////////////////////////////////
+
+fprintf(stats_log, "\n=== ADDRESS PREDICTOR ============================================================\n\n");
+  fprintf(stats_log, "Confident and Correct : %lu , Confident and Not Correct : %lu, Not Confident and Correct : %lu, Not Confident and Not Correct : %lu\n", MPT.confident_and_correct , MPT.confident_and_incorrect, MPT.not_confident_and_correct, MPT.not_confident_and_incorrect);
+
+///////////////////////////////////////////////////////////////
 
   #ifdef RISCV_MICRO_DEBUG
     fclose(this->fetch_log    );
