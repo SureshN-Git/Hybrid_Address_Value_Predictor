@@ -50,7 +50,8 @@ bool mpt::is_addr_predictable(unsigned int pc) {
 
 
 
-	if (mp_table[mpt_index].shb >= 15 && mp_table[mpt_index].dispatch_conf >=2) {
+	//if (mp_table[mpt_index].shb >= 15 && mp_table[mpt_index].dispatch_conf >=2) {
+	if (mp_table[mpt_index].shb >= 15) {
 
 
 		//printf("Number of Predicted Instructions :  %d \n", predictionCount);

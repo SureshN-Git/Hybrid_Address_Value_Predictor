@@ -30,41 +30,44 @@ void pipeline_t::agen(unsigned int index, bool predicted) {
   	addr = PAY.buf[index].A_value.dw;
   } else if(IS_LOAD(PAY.buf[index].flags)){            /**/
     //Loads use the I-type immediate encoding
-	  /*if (index == 0 && predicted) {
-		  printf("Predicted part reached AGEN \n");
-	  }
 
-	  if (index == 0 && !predicted) {
-		  printf("Real part reached AGEN \n");
-	  }*/
 
-	  if (predicted) {                                                     // Predicted Instruction
+//*************************************************Addr*******************************************************
+
+	/*  if (predicted) {                                                     // Predicted Instruction
 		  addr = PAY.buf[index].predicted_addr;
-		  //printf("Predicted value is used\n");
 	  }
 	  else {                                                              // Real Instruction
 		  addr = PAY.buf[index].A_value.dw + inst.i_imm();
 		  if (PAY.buf[index].is_addr_pred) {                               // Verification
-			 /* if (index == 0 && !predicted) {
-				  printf("Real part verification    %d    %d  \n", addr, PAY.buf[index].predicted_addr);
-			  }*/
-
 
 			  if (addr != PAY.buf[index].predicted_addr) {
-				 /* if (index == 0 && !predicted) {
-					  printf("Real part verification wrong \n");
-				  }*/
+
 				  REN->set_load_violation(PAY.buf[index].AL_index);   // Setting Misprediction
 					PAY.buf[index].addr_misprediction = true;
 			  }
 		  }
-	  }
+	  }*/
 
-  } else {                                            /**/
+
+//********************************************************************************************************
+
+  	addr = PAY.buf[index].A_value.dw + inst.i_imm();	//Comment if replicating instruction
+
+  } 
+
+
+
+
+
+
+  else {                                            /**/
     //Stores use the S-type immediate encoding
-	  if (predicted) {
+
+//*************************************************Addr*******************************************************
+	 /*if (predicted) {
 		  addr = PAY.buf[index].predicted_addr;
-		  //printf("Predicted value is used\n");
+
 	  }
 	  else {
 		  addr = PAY.buf[index].A_value.dw + inst.s_imm();
@@ -77,9 +80,24 @@ void pipeline_t::agen(unsigned int index, bool predicted) {
 					PAY.buf[index].addr_misprediction = true;
 			  }
 		  }
-	  }
+	  }*/
+
+
+//********************************************************************************************************
+
+  	addr = PAY.buf[index].A_value.dw + inst.s_imm();	//Comment if replicating instruction
+
+		if (PAY.buf[index].is_addr_pred)	{
+			  if (addr != PAY.buf[index].predicted_addr) {
+				  //REN->set_value_misprediction(PAY.buf[index].AL_index);   // Setting Misprediction
+				  REN->set_load_violation(PAY.buf[index].AL_index);
+					PAY.buf[index].addr_misprediction = true;
+			  }
+		}
 
   }
+
+
 	PAY.buf[index].addr = addr;
 
 	//// Adjust address of the lower half of DLW and DSW.

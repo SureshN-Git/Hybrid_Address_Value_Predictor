@@ -113,11 +113,12 @@ void pipeline_t::retire(size_t& instret) {
 
 
 			// Train the MPT                              /**/
-			if (!PAY.buf[PAY.head].mpt_hit) {
+			if (!PAY.buf[PAY.head].mpt_hit && store) { //Store Only
 				MPT.create_entry(PAY.buf[PAY.head].addr, PAY.buf[PAY.head].pc);
 			}
 			else{
-				MPT.update_entry(PAY.buf[PAY.head].addr, PAY.buf[PAY.head].pc, PAY.buf[PAY.head].inst_issue_delay);
+				if(store) //Store Only
+					MPT.update_entry(PAY.buf[PAY.head].addr, PAY.buf[PAY.head].pc, PAY.buf[PAY.head].inst_issue_delay);
 			}
 
 	if(PAY.buf[PAY.head].inst_issue_delay > 1 && PAY.buf[PAY.head].inst_issue_delay <= 5)

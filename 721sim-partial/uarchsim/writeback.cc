@@ -190,14 +190,10 @@ void pipeline_t::writeback(unsigned int lane_number) {
       // 1. At this point of the code, 'index' is the instruction's index into PAY.buf[] (payload).
       // 2. Set the completed bit for this instruction in the Active List.
       //////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  /*if (index == 0 && Execution_Lanes[lane_number].wb.predicted) {
-		  printf("Predicted part reached WB \n");
-	  }
 
-	  if (index == 0 && !Execution_Lanes[lane_number].wb.predicted) {
-		  printf("Real part reached WB \n");
-	  }*/
-  /**/if (PAY.buf[index].is_addr_pred) {
+
+//*************************************Addr*************************************************
+ 	/*if (PAY.buf[index].is_addr_pred) {
 		  assert(PAY.buf[index].set_complete_counter < 2);
 		  PAY.buf[index].set_complete_counter++;
 		  if (PAY.buf[index].set_complete_counter == 2) {
@@ -206,12 +202,11 @@ void pipeline_t::writeback(unsigned int lane_number) {
 	  }
 	  else{
 		REN->set_complete(PAY.buf[index].AL_index);
-	 }
+	 }*/
 
-  if (index == 0) {
-	  //printf("counter  :  %d  \n",PAY.buf[index].set_complete_counter);
-  }
-  /**/
+//**************************************************************************************
+
+		REN->set_complete(PAY.buf[index].AL_index); // Comment if replicating Instruction
 
       //////////////////////////////////////////////////////////////////////////////////////////////////////////
       // Remove the instruction from the Execution Lane.

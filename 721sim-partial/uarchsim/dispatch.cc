@@ -89,7 +89,8 @@ void pipeline_t::dispatch() {
    }
 
    // Now, check for available entries in the unified IQ and the LQ/SQ.
-   if (IQ.stall(2*bundle_inst) || LSU.stall(bundle_load, bundle_store)) {
+   //********Addr********* 2*bundle_inst if duplicating**********************
+   if (IQ.stall(bundle_inst) || LSU.stall(bundle_load, bundle_store)) {
       return;
    }
 
@@ -140,9 +141,7 @@ void pipeline_t::dispatch() {
 
 			PAY.buf[index].AL_index = REN->dispatch_inst(dest_valid, log_reg, phys_reg, load_flag, store_flag, branch_flag, amo_flag, csr_flag, PC);
 
-			if (PAY.buf[index].AL_index == 112) {
-				//printf("Index 112   : %d \n", index);
-			}
+
 
 
       // FIX_ME #8
@@ -246,7 +245,7 @@ void pipeline_t::dispatch() {
 				 false
 				 );
 
-		/**/	 if (PAY.buf[index].is_addr_pred && !(A_ready)) {
+		/*	 if (PAY.buf[index].is_addr_pred && !(A_ready)) {
     assert(IS_LOAD(PAY.buf[index].flags) || IS_STORE(PAY.buf[index].flags));
 
 			if(IS_LOAD(PAY.buf[index].flags))
@@ -285,7 +284,8 @@ void pipeline_t::dispatch() {
 			 }
 			else{
 				PAY.buf[index].is_addr_pred = 0;
-			}
+			}*/ //For No Duplication
+
 
 
             break;
@@ -378,6 +378,10 @@ void pipeline_t::dispatch() {
                          index,
                          PAY.buf[index].LQ_index, PAY.buf[index].LQ_phase,
                          PAY.buf[index].SQ_index, PAY.buf[index].SQ_phase);
+
+		if (PAY.buf[index].is_addr_pred && !(A_ready)) //Send Store Address to LSU
+
+	   		 LSU.store_addr(cycle, PAY.buf[index].predicted_addr, PAY.buf[index].SQ_index, PAY.buf[index].LQ_index, PAY.buf[index].LQ_phase);
 
             // The lower part of a split-store should inherit the same LSU indices.
             if (PAY.buf[index].split_store) {

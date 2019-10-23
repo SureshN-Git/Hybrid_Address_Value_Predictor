@@ -1,0 +1,35 @@
+-------- Phase Counters Phase ID 1--------
+commit_count : 10000
+cycle_count : 11945
+-------- Phase Rates Phase ID 1--------
+ipc_rate : 0.84
+-------- Phase Counters Phase ID 2--------
+commit_count : 10000
+cycle_count : 7997
+-------- Phase Rates Phase ID 2--------
+ipc_rate : 1.25
+-------- Phase Counters Phase ID 3--------
+commit_count : 10000
+cycle_count : 7619
+-------- Phase Rates Phase ID 3--------
+ipc_rate : 1.31
+-------- Phase Counters Phase ID 4--------
+commit_count : 10000
+cycle_count : 7840
+-------- Phase Rates Phase ID 4--------
+ipc_rate : 1.28
+-------- Phase Counters Phase ID 5--------
+commit_count : 10000
+cycle_count : 7482
+-------- Phase Rates Phase ID 5--------
+ipc_rate : 1.34
+-------- Phase Counters Phase ID 6--------
+commit_count : 10000
+cycle_count : 7495
+-------- Phase Rates Phase ID 6--------
+ipc_rate : 1.33
+-------- Phase Counters Phase ID 7--------
+commit_count : 10000
+cycle_count : 7539
+-------- Phase Rates Phase ID 7--------
+ipc_rate : 1.33

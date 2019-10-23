@@ -19,8 +19,7 @@ void pipeline_t::execute(unsigned int lane_number) {
       //////////////////////////////////////////////////////////////////////////////////////////////////////////
       index = Execution_Lanes[lane_number].ex[depth].index;
 	  predicted = Execution_Lanes[lane_number].ex[depth].predicted;     /**/
-	  //if(predicted == 1)
-	  //printf("Predicted : %d \n", Execution_Lanes[lane_number].ex[depth].predicted);
+
       //////////////////////////////////////////////////////////////////////////////////////////////////////////
       // Execute the instruction.
       // * Load and store instructions use the AGEN and Load/Store Units.
@@ -36,18 +35,13 @@ void pipeline_t::execute(unsigned int lane_number) {
 			  //bypassReal = 1;
 		  }
 
-		  if(predicted == PAY.buf[index].is_addr_pred){                           /**/
+		  //if(predicted == PAY.buf[index].is_addr_pred)  //Uncomment if Replicated
+			{                          
 			   // Execute the load or store in the LSU.
 
-			 /* if (index == 0 && predicted) {
-				  printf("Predicted part reached EXE \n");
-			  }
-
-			  if (index == 0 && !predicted) {
-				  printf("Real part Bypassed EXE \n");
-			  }*/
-			  if(PAY.buf[index].is_addr_pred)
-			  assert(predicted);
+	
+			  //if(PAY.buf[index].is_addr_pred) //Uncomment if Replicated
+			 // assert(predicted); //Uncomment if Replicated
 
 			  if (IS_LOAD(PAY.buf[index].flags)) {
 				  // Instruction is a load.
@@ -93,12 +87,6 @@ void pipeline_t::execute(unsigned int lane_number) {
 						  IQ.wakeup(PAY.buf[index].C_phys_reg);
 						  REN->set_ready(PAY.buf[index].C_phys_reg);
 						  REN->write(PAY.buf[index].C_phys_reg, PAY.buf[index].C_value.dw);
-						  if (PAY.buf[index].C_phys_reg == 197 && index == 154) {
-							  //printf("Destination Value : %d \n", PAY.buf[index].C_value.dw);
-						  }
-						  if (PAY.buf[index].C_phys_reg == 197) {
-							  //printf("Waking up 197 by inst %d \n", index);
-						  }
 					  }
 
 				  //}
@@ -202,11 +190,12 @@ void pipeline_t::execute(unsigned int lane_number) {
 
       // Copy instruction to Writeback Stage.
       // BUT: Stalled loads should not advance to the Writeback Stage.
-      if (!IS_LOAD(PAY.buf[index].flags) || hit || (!predicted && PAY.buf[index].is_addr_pred)) {
+     // if (!IS_LOAD(PAY.buf[index].flags) || hit || (!predicted && PAY.buf[index].is_addr_pred)) { //Uncomment if replicated
+      if (!IS_LOAD(PAY.buf[index].flags) || hit) {
          Execution_Lanes[lane_number].wb.valid = true;
          Execution_Lanes[lane_number].wb.index = Execution_Lanes[lane_number].ex[depth].index;
          Execution_Lanes[lane_number].wb.branch_mask = Execution_Lanes[lane_number].ex[depth].branch_mask;
-		 Execution_Lanes[lane_number].wb.predicted = Execution_Lanes[lane_number].ex[depth].predicted;
+		// Execution_Lanes[lane_number].wb.predicted = Execution_Lanes[lane_number].ex[depth].predicted;  //Uncomment if replicated
       }
 
       // Remove instruction from Execute Stage.
@@ -261,7 +250,7 @@ void pipeline_t::execute(unsigned int lane_number) {
          Execution_Lanes[lane_number].ex[depth].valid = true;
          Execution_Lanes[lane_number].ex[depth].index = Execution_Lanes[lane_number].ex[depth-1].index;
          Execution_Lanes[lane_number].ex[depth].branch_mask = Execution_Lanes[lane_number].ex[depth-1].branch_mask;
-		 Execution_Lanes[lane_number].ex[depth].predicted = Execution_Lanes[lane_number].ex[depth - 1].predicted;
+		// Execution_Lanes[lane_number].ex[depth].predicted = Execution_Lanes[lane_number].ex[depth - 1].predicted;  //Uncomment if replicated
 
          // Remove instruction from [depth-1] sub-stage.
          Execution_Lanes[lane_number].ex[depth-1].valid = false;
@@ -313,12 +302,9 @@ void pipeline_t::load_replay() {
 	   // Tips:
 	   // 1. At this point of the code, 'index' is the instruction's index into PAY.buf[] (payload).
 	   // 2. Set the completed bit for this instruction in the Active List.
-	   /*if(!PAY.buf[index].is_addr_pred)
-		{
-		   REN->set_complete(PAY.buf[index].AL_index);
-		}*/
 
-		if (PAY.buf[index].is_addr_pred) {
+//***********************************Addr********************************************
+		/*if (PAY.buf[index].is_addr_pred) {
 		  assert(PAY.buf[index].set_complete_counter < 2);
 		  PAY.buf[index].set_complete_counter++;
 		  if (PAY.buf[index].set_complete_counter == 2) {
@@ -327,8 +313,11 @@ void pipeline_t::load_replay() {
 	  }
 	  else{
 		REN->set_complete(PAY.buf[index].AL_index);
-	 }
+	 }*/
 
+//*******************************************************************************
+
+		REN->set_complete(PAY.buf[index].AL_index); // Comment if replicating
 
    }
 }
