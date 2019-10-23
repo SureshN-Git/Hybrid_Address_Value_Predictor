@@ -1,0 +1,4 @@
+Start ----------------------------------------------------
+Number of Physical Registers : 320
+Number of logical Registers : 64
+Number of Branch Checkpoints : 32
