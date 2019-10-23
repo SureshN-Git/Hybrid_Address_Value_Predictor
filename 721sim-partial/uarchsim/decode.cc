@@ -207,7 +207,7 @@ void pipeline_t::decode() {
 				PAY.buf[index].C_valid = true;
 				PAY.buf[index].C_log_reg = inst.rd();
 				// MPT Prediction
-				if (PAY.buf[index].mpt_hit) {
+				/*if (PAY.buf[index].mpt_hit) {
 					//printf("Entered Predictor");
 					bool is_addr_predictable = MPT.is_addr_predictable(PAY.buf[index].pc);
 					PAY.buf[index].is_addr_pred = is_addr_predictable;
@@ -219,7 +219,7 @@ void pipeline_t::decode() {
 						PAY.buf[index].not_confident = true;					
 					}
 					//PAY.buf[index].next_predicted_addr = MPT.predict_next_addr(PAY.buf[index].pc);
-				}
+				}*/
 				break;
 
 
@@ -231,7 +231,7 @@ void pipeline_t::decode() {
 				PAY.buf[index].C_valid = true;
 				PAY.buf[index].C_log_reg = inst.rd()+NXPR;
 				// MPT Prediction
-				if (PAY.buf[index].mpt_hit) {
+				/*if (PAY.buf[index].mpt_hit) {
 					bool is_addr_predictable = MPT.is_addr_predictable(PAY.buf[index].pc);
 					PAY.buf[index].is_addr_pred = is_addr_predictable;
 					if (is_addr_predictable) {
@@ -243,7 +243,7 @@ void pipeline_t::decode() {
 						PAY.buf[index].not_confident = true;					
 					}
 					//PAY.buf[index].next_predicted_addr = MPT.predict_next_addr(PAY.buf[index].pc);
-				}
+				}*/
 				break;
 
 			case OP_STORE:

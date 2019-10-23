@@ -36,6 +36,7 @@
 
 #include "mpt.h"        // MEMORY PREFETCH TABLE            /**/
 
+#include "predictor.h"        // VALUE PREDICTOR 	/**/
 #include "debug.h"
 
 #include "stats.h"
@@ -375,9 +376,10 @@ private:
 	lsu LSU;
 
 	/////////////////////////////////////////////////////////////
-	// Memory Prefetch Table.
+	// Memory Prefetch Table and Value Predictor
 	/////////////////////////////////////////////////////////////
 	mpt MPT;
+	predictor VP;
 
 	//////////////////////
 	// PRIVATE FUNCTIONS
