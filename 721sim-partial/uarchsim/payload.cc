@@ -16,6 +16,9 @@ unsigned int payload::push() {
 	buf[index].mpt_hit = 0; /**/
 	buf[index].inst_issue_delay = 0; /**/
 	buf[index].addr_misprediction = 0;
+	buf[index].is_value_pred = 0; /**/
+	buf[index].value_not_confident = 0; /**/
+
 
 
 	// Increment tail by two, since each instruction is pre-allocated

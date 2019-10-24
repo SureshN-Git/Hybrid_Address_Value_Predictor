@@ -158,6 +158,13 @@ typedef struct {
                                 // this is the branch's ID (its bit position
                                 // in the Global Branch Mask).
 
+   // Value predictor
+
+   unsigned int predicted_value;
+   bool is_value_pred;
+   bool value_not_confident;
+   uint64_t uq_tail;
+
    ////////////////////////
    // Set by Dispatch Stage.
    ////////////////////////

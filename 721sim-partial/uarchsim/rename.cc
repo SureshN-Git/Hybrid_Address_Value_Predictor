@@ -80,11 +80,11 @@ void pipeline_t::rename2() {
       // 3. The instruction's payload has all the information you need to count resource needs.
       //    There is a flag in the instruction's payload that *directly* tells you if this instruction needs a checkpoint.
       //    Another field indicates whether or not the instruction has a destination register.
-	  
+
 	  if (PAY.buf[index].checkpoint) {
 		  numOfBranches++;
 	  }
-	  
+
 	  // Counting number of instructions that have destination registers in the bundle
 	  if(PAY.buf[index].C_valid){
 		  numOfDestinationRegisters++;
@@ -146,9 +146,66 @@ void pipeline_t::rename2() {
 		  PAY.buf[index].D_phys_reg = REN->rename_rsrc(PAY.buf[index].D_log_reg);
 	  }
 
-	  if (PAY.buf[index].C_valid) {
-		  PAY.buf[index].C_phys_reg = REN->rename_rdst(PAY.buf[index].C_log_reg);
-	  }
+    if(PAY.buf[index].C_valid)
+    {
+            PAY.buf[index].C_phys_reg = REN->rename_rdst(PAY.buf[index].C_log_reg);
+            PAY.buf[index].is_value_pred = false;
+            REN->clear_ready(PAY.buf[index].C_phys_reg);
+
+            PAY.buf[index].value_not_confident = false;
+
+            bool load_flag;
+
+            if (PREDICT_LOADS_ONLY)
+            {
+              load_flag = IS_LOAD(PAY.buf[index].flags);
+            }
+
+            else load_flag = true;
+
+            if(!(IS_AMO(PAY.buf[index].flags) || IS_CSR(PAY.buf[index].flags) || IS_BRANCH(PAY.buf[index].flags)) && load_flag && !PERFECT_VALUE_PREDICTION)
+            {
+
+
+            if (((VALUE_PREDICTION == 2)||(VALUE_PREDICTION == 1)) && !PERFECT_VALUE_PREDICTION)
+            {
+
+            //#ifdef stride
+              //printf("Stride\n");
+            PAY.buf[index].predicted_value.dw = VP.get_val(VALUE_PREDICTION,PAY.buf[index].pc);
+            //bool check_confidence = ORACLE_CONF ? (PAY.buf[index].predicted_value.dw == PAY.buf[index].C_value.dw):(VP.get_conf(PAY.buf[index].pc));
+            bool check_confidence = VP.get_conf(PAY.buf[index].pc);
+
+            if (check_confidence)
+            {
+              //p_count += 1;
+              //VP.predicted_count++;
+                if(REAL_CONF && !ORACLE_CONF && !PERFECT_VALUE_PREDICTION){
+                PAY.buf[index].is_value_pred = true;
+                PAY.buf[index].value_not_confident = false;
+                REN->set_ready(PAY.buf[index].C_phys_reg);
+                REN->write(PAY.buf[index].C_phys_reg, PAY.buf[index].predicted_value.dw);}
+
+                else if(ORACLE_CONF && PAY.buf[index].predicted_value.dw==PAY.buf[index].C_value.dw && !PERFECT_VALUE_PREDICTION)
+                {
+                PAY.buf[index].is_value_pred = true;
+                PAY.buf[index].value_not_confident = false;
+                REN->set_ready(PAY.buf[index].C_phys_reg);
+               }
+
+
+
+
+            }
+
+            else
+            {
+              PAY.buf[index].is_value_pred = false;
+              PAY.buf[index].value_not_confident = true;
+            }
+
+            }
+
 
       // FIX_ME #4
       // Get the instruction's branch mask.
@@ -159,7 +216,7 @@ void pipeline_t::rename2() {
       //    from one pipeline stage to the next. Normally the branch_mask would be wires at this point in the logic but since we
       //    don't have wires place it temporarily in the RENAME2[] pipeline register alongside the instruction, until it advances
       //    to the DISPATCH[] pipeline register. The required left-hand side of the assignment statement is already provided for you below:
-      
+
 	  RENAME2[i].branch_mask = REN->get_branch_mask();
 
 
