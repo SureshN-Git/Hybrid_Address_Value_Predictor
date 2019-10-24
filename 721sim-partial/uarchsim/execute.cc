@@ -36,10 +36,10 @@ void pipeline_t::execute(unsigned int lane_number) {
 		  }
 
 		  //if(predicted == PAY.buf[index].is_addr_pred)  //Uncomment if Replicated
-			{                          
+			{
 			   // Execute the load or store in the LSU.
 
-	
+
 			  //if(PAY.buf[index].is_addr_pred) //Uncomment if Replicated
 			 // assert(predicted); //Uncomment if Replicated
 
@@ -87,6 +87,15 @@ void pipeline_t::execute(unsigned int lane_number) {
 						  IQ.wakeup(PAY.buf[index].C_phys_reg);
 						  REN->set_ready(PAY.buf[index].C_phys_reg);
 						  REN->write(PAY.buf[index].C_phys_reg, PAY.buf[index].C_value.dw);
+
+              if(VALUE_PREDICTION != 0)
+                     if (PAY.buf[index].is_value_pred && PAY.buf[index].C_valid)
+                     {
+                       if (PAY.buf[index].predicted_value.dw  !=  PAY.buf[index].C_value.dw )
+                       {
+                          REN->set_value_misprediction(PAY.buf[index].AL_index);
+                       }
+                     }
 					  }
 
 				  //}
@@ -171,6 +180,14 @@ void pipeline_t::execute(unsigned int lane_number) {
          //    separately); see the comments in file payload.h regarding referencing a value as a single doubleword.
 		 if (PAY.buf[index].C_valid) {
 			 REN->write(PAY.buf[index].C_phys_reg, PAY.buf[index].C_value.dw);
+       if(VALUE_PREDICTION != 0)
+              if (PAY.buf[index].is_value_pred && PAY.buf[index].C_valid)
+              {
+                if (PAY.buf[index].predicted_value.dw  !=  PAY.buf[index].C_value.dw )
+                {
+                   REN->set_value_misprediction(PAY.buf[index].AL_index);
+                }
+              }
 		 }
 
 
@@ -294,6 +311,14 @@ void pipeline_t::load_replay() {
 	   IQ.wakeup(PAY.buf[index].C_phys_reg);
 	   REN->set_ready(PAY.buf[index].C_phys_reg);
 	   REN->write(PAY.buf[index].C_phys_reg, PAY.buf[index].C_value.dw);
+     if(VALUE_PREDICTION != 0)
+            if (PAY.buf[index].is_value_pred && PAY.buf[index].C_valid)
+            {
+              if (PAY.buf[index].predicted_value.dw  !=  PAY.buf[index].C_value.dw )
+              {
+                 REN->set_value_misprediction(PAY.buf[index].AL_index);
+              }
+            }
 
 
 	   // FIX_ME #18b
