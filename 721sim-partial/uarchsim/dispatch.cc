@@ -193,9 +193,36 @@ void pipeline_t::dispatch() {
       // 1. At this point of the code, 'index' is the instruction's index into PAY.buf[] (payload).
       // 2. If the instruction has a destination register, then clear its ready bit; otherwise do nothing.
 				//C_ready = false;
-			if (PAY.buf[index].C_valid) {
-				REN->clear_ready(PAY.buf[index].C_phys_reg);
-			}
+        if(VALUE_PREDICTION != 0 && !PERFECT_VALUE_PREDICTION)
+          {
+
+             if(PAY.buf[index].C_valid && !(PAY.buf[index].is_value_pred))
+             {
+                REN->clear_ready(PAY.buf[index].C_phys_reg);
+             }
+
+          }
+
+          else if(PERFECT_VALUE_PREDICTION)
+          {
+             if (PAY.buf[index].good_instruction && PAY.buf[index].C_valid)
+                {
+          //if (IS_LOAD(PAY.buf[index].flags))
+                  {
+                     REN->write(PAY.buf[index].C_phys_reg, PAY.buf[index].C_value.dw);
+                     REN->set_ready(PAY.buf[index].C_phys_reg);
+                  }
+
+                }
+          }
+
+          else
+          {
+            if(PAY.buf[index].C_valid )
+             {
+                REN->clear_ready(PAY.buf[index].C_phys_reg);
+             }
+          }
 
 
       // FIX_ME #10
