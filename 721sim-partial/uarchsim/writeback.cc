@@ -90,7 +90,7 @@ void pipeline_t::writeback(unsigned int lane_number) {
          }
          else {
             // Branch was mispredicted.
-		
+
 		unsigned int al_tail, al_head, al_index;
 		al_index = PAY.buf[index].AL_index;
 		al_tail = REN->alTail;
@@ -104,17 +104,17 @@ void pipeline_t::writeback(unsigned int lane_number) {
 				  MPT.dec_pred_count(PC);
 			       }
 			    }
-			    
+
 			    else
 			    {
-			       
+
 			       uint64_t PC;
-			       
+
 			       if(al_index > al_head)
 			       {
 				  MPT.squash_pred_count();
 				  for(uint64_t i = al_head; i<=al_index; i++)
-				  {  
+				  {
 				     PC = REN->actList[i].pc;
 				     MPT.inc_pred_count(PC);
 				  }
@@ -122,12 +122,65 @@ void pipeline_t::writeback(unsigned int lane_number) {
 			       else
 			       {
 				  for(uint64_t i = al_tail; i>al_index; i--)
-				  {  
+				  {
 				     PC = REN->actList[i].pc;
 				     MPT.dec_pred_count(PC);
 				  }
 			       }
 			    }
+
+
+          //Value prediction
+
+          if(VALUE_PREDICTION == 1)
+            {
+            uint64_t al_index = PAY.buf[index].AL_index;
+            uint64_t al_tail = REN->alTail;
+            uint64_t al_head = REN->alHead;
+
+            if(al_tail > al_head)
+            {
+               for(uint64_t i = al_tail; i>al_index; i--)
+               {
+                  uint64_t PC = REN->actList[i].pc;
+                  VP.dec_iter(PC);
+               }
+            }
+
+            else
+            {
+
+               uint64_t PC;
+
+               if(al_index > al_head)
+               {
+                  VP.clear_predictor();
+                  for(uint64_t i = al_head; i<=al_index; i++)
+                  {
+                     PC = REN->actList[i].pc;
+                     VP.inc_iter(PC);
+                  }
+               }
+               else
+               {
+                  for(uint64_t i = al_tail; i>al_index; i--)
+                  {
+                     PC = REN->actList[i].pc;
+                     VP.dec_iter(PC);
+                  }
+               }
+            }
+
+            //#endif
+
+            // for (uint64_t i = ((PAY.tail+PAYLOAD_BUFFER_SIZE)%PAYLOAD_BUFFER_SIZE); i == index; i=((i+PAYLOAD_BUFFER_SIZE-2)%PAYLOAD_BUFFER_SIZE))
+            //     {
+            //                uint64_t PC;
+            //                PC = PAY.buf[i].pc;
+            //                VP.dec_iter(PC);
+            //     }
+
+            }
 
 
 
