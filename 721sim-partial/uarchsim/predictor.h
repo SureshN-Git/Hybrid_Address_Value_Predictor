@@ -35,7 +35,7 @@ public:
 	uint64_t HASH;
 	uint64_t uq_tail;
 	uint64_t uq_head;
-	predictor(uint64_t AL_size, uint64_t type, uint64_t ORD, uint64_t size);
+	predictor(uint64_t AL_size, uint64_t type, uint64_t ORD);
 	uint64_t stride(uint64_t tag);
 	uint64_t last_value(uint64_t tag);
 	uint64_t get_val(uint64_t type, uint64_t PC);

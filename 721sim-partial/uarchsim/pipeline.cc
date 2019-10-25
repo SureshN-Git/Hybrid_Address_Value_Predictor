@@ -79,7 +79,7 @@ pipeline_t::pipeline_t(
 	FQ(fq_size, this),
 	IQ(iq_size, iq_num_parts, this),
 	LSU(lq_size, sq_size, Tid, _mmu, this),
-  	VP(rob_size,VALUE_PREDICTION,ORDER,PREDICTOR_SIZE),
+  	VP(rob_size,VALUE_PREDICTION,ORDER),
 	MPT(PREDICTOR_SIZE)
 {
   unsigned int i, j, ex_depth;
@@ -353,7 +353,7 @@ fprintf(stats_log, "\n=== ADDRESS PREDICTOR ====================================
   fprintf(stats_log, "Confident and Correct : %lu , Confident and Not Correct : %lu, Not Confident and Correct : %lu, Not Confident and Not Correct : %lu\n", MPT.confident_and_correct , MPT.confident_and_incorrect, MPT.not_confident_and_correct, MPT.not_confident_and_incorrect);
 
   fprintf(stats_log, "\n=== VALUE PREDICTOR ============================================================\n\n");
-  fprintf(stats_log, "Confident and Correct : %lu , Confident and Not Correct : %lu, Not Confident and Correct : %lu, Not Confident and Not Correct : %lu\n", VP.predicted , VP.correct_predicted_count, VP.misp_count, VP.not_predicted_but_correct, VP.not_predicted_not_correct );
+  fprintf(stats_log, "Confident and Correct : %lu , Confident and Not Correct : %lu, Not Confident and Correct : %lu, Not Confident and Not Correct : %lu\n", VP.correct_predicted_count, VP.misp_count, VP.not_predicted_but_correct, VP.not_predicted_not_correct );
 
 ///////////////////////////////////////////////////////////////
 

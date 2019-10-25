@@ -160,10 +160,11 @@ typedef struct {
 
    // Value predictor
 
-   unsigned int predicted_value;
+   union64_t predicted_value;
    bool is_value_pred;
    bool value_not_confident;
    uint64_t uq_tail;
+   uint64_t context;
 
    ////////////////////////
    // Set by Dispatch Stage.

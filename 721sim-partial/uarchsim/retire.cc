@@ -202,7 +202,7 @@ void pipeline_t::retire(size_t& instret) {
 
                if (flag && load_flag) {
                  if ((PAY.buf[PAY.head].is_value_pred || PAY.buf[PAY.head].value_not_confident)&&PAY.buf[PAY.head].C_valid) {
-                  if(PAY.buf[PAY.head].predicted) VP.predicted++;
+                  if(PAY.buf[PAY.head].is_value_pred) VP.predicted++;
                    if (PAY.buf[PAY.head].predicted_value.dw == PAY.buf[PAY.head].C_value.dw)
                    {
                      if (PAY.buf[PAY.head].is_value_pred) {

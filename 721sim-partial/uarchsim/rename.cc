@@ -207,6 +207,8 @@ void pipeline_t::rename2() {
             }
 }
 
+}
+
       // FIX_ME #4
       // Get the instruction's branch mask.
       //

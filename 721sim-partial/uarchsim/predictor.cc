@@ -8,12 +8,13 @@
 
 using namespace std;
 
-predictor::predictor(uint64_t AL_size, uint64_t type, uint64_t ORD, uint64_t size)
+predictor::predictor(uint64_t AL_size, uint64_t type, uint64_t ORD)
 {
-	uint64_t count = pow(2,size);
+	uint64_t count = pow(2,15);
+	uint64_t count1 = pow(2,25);
 	predict = new pred[count];
 	hystride = new hyb_pred[count];
-	vpt = new VPT[count];
+	vpt = new VPT[count1];
 	chooser = new uint64_t[count];
 	for (uint64_t i = 0; i < count; i++)
 	{
@@ -27,7 +28,7 @@ predictor::predictor(uint64_t AL_size, uint64_t type, uint64_t ORD, uint64_t siz
 		chooser[i] = 1;
 	}
 
-	for (uint64_t i = 0; i < count; i++)
+	for (uint64_t i = 0; i < count1; i++)
 	{
 		vpt[i].value = 0;
 		vpt[i].conf = 0;
