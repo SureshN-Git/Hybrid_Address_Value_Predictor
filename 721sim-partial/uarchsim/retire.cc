@@ -186,6 +186,47 @@ void pipeline_t::retire(size_t& instret) {
 
 		  REN->commit();
 
+      //Value Prediction
+
+
+      bool load_flag;
+
+               if (PREDICT_LOADS_ONLY)
+               {
+                 load_flag = IS_LOAD(PAY.buf[PAY.head].flags);
+               }
+
+               else load_flag = true;
+
+               bool flag = !(IS_AMO(PAY.buf[PAY.head].flags) || IS_CSR(PAY.buf[PAY.head].flags) || IS_BRANCH(PAY.buf[PAY.head].flags)) && !PERFECT_VALUE_PREDICTION;
+
+               if (flag && load_flag) {
+                 if ((PAY.buf[PAY.head].is_value_pred || PAY.buf[PAY.head].value_not_confident)&&PAY.buf[PAY.head].C_valid) {
+                  if(PAY.buf[PAY.head].predicted) VP.predicted++;
+                   if (PAY.buf[PAY.head].predicted_value.dw == PAY.buf[PAY.head].C_value.dw)
+                   {
+                     if (PAY.buf[PAY.head].is_value_pred) {
+                       VP.correct_predicted_count++;
+                     }
+                     else {
+                       VP.not_predicted_but_correct++;
+                     }
+                   }
+                   else {
+                     if (PAY.buf[PAY.head].is_value_pred) {
+                       VP.misp_count++;
+                     }
+                     else {
+                       VP.not_predicted_not_correct++;
+                     }
+                   }
+                 }
+
+               }
+
+
+
+
 
          // If the committed instruction is a branch, signal the branch predictor to commit its oldest branch.
          if (branch && !PERFECT_BRANCH_PRED) {
@@ -222,35 +263,47 @@ void pipeline_t::retire(size_t& instret) {
                next_inst_pc = state.epc;
 	    else if (br_misp)
                next_inst_pc = PAY.buf[PAY.head].c_next_pc;
-	    else
+     else
+      {
+         if (val_misp && PAY.buf[PAY.head].C_valid && (PAY.buf[PAY.head].value_not_confident || PAY.buf[PAY.head].is_value_pred))
+            {
+
+               VP.update_predict(PAY.buf[PAY.head].C_value.dw, PAY.buf[PAY.head].pc, PAY.buf[PAY.head].context);
+               if (VALUE_PREDICTION == 1)
+               VP.dec_iter(PAY.buf[PAY.head].pc);
+               ///////////////////////////////////////////////////////////////////
+            }
 	       next_inst_pc = INCREMENT_PC(PAY.buf[PAY.head].pc);
 
-            // The head instruction was already committed above (fix #17b).
-	    // Squash all instructions after it.
-      //MPT.squash_pred_count();
-
-            squash_complete(next_inst_pc);
-            inc_counter(recovery_count);
-
-			if (val_misp) {
-
-				//valueMissPredCount++;
-				//printf("value Missprediction :  %d \n", valueMissPredCount);
-			}
-
-	    // Pop the instruction from PAY.
-	    if (!PAY.buf[PAY.head].split) PAY.pop();
-	    PAY.pop();
-
-            // Flush PAY.
-            PAY.clear();
-         }
-         else {
-	    // Pop the instruction from PAY.
-	    if (!PAY.buf[PAY.head].split) PAY.pop();
-	    PAY.pop();
-         }
       }
+
+           // The head instruction was already committed above (fix #17b).
+	    // Squash all instructions after it.
+
+           squash_complete(next_inst_pc);
+           inc_counter(recovery_count);
+
+	    // Pop the instruction from PAY.
+	    if (!PAY.buf[PAY.head].split) PAY.pop();
+	    PAY.pop();
+
+           // Flush PAY.
+           PAY.clear();
+        }
+        else {
+	    // Pop the instruction from PAY.
+        if(PAY.buf[PAY.head].C_valid && !val_misp && (PAY.buf[PAY.head].value_not_confident || PAY.buf[PAY.head].is_value_pred))
+        {
+        VP.update_predict(PAY.buf[PAY.head].C_value.dw, PAY.buf[PAY.head].pc, PAY.buf[PAY.head].context);
+        if (VALUE_PREDICTION == 1)
+        VP.dec_iter(PAY.buf[PAY.head].pc);
+        ////////////////////////////////////////////////////////////////////////////////////
+        }
+
+	    if (!PAY.buf[PAY.head].split) PAY.pop();
+	    PAY.pop();
+        }
+     }
       else if (load_viol) {
 	 // This is a mispredicted load owing to speculative memory disambiguation (not value prediction).
 	 // Therefore the load is incorrect and not committed.
@@ -274,7 +327,7 @@ void pipeline_t::retire(size_t& instret) {
          squash_complete(offending_PC);
          inc_counter(recovery_count);
 
-     
+
 
          // Flush PAY.
          PAY.clear();
